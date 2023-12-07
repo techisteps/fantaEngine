@@ -8,74 +8,31 @@ import pyrr
 from PIL import Image
 # from objData import objData
 from window import *
+from gltfReader import *
 from fantashader import fantaShader
+from fantatexture import fantaTexture
 
-
-
-
-# v1 = FantaWin(400, 300)
-# v2 = FantaWin(400, 300)
-
-# print(v1)
-# print(v2)
-# w1 = v1.getWindow()
-# w2 = v2.getWindow()
-# print(w1)
-# print(w2)
-
+# Define window
 fantawin = FantaWin(400, 300)
 
 
+# Define 3d object
+gltfSrcfile: str = "assets/model/monkey.gltf"
+gltfdata = gltfReader(gltfSrcfile)
 
-objSrcfile: str = "box.obj"
-# objdata = objData(objSrcfile)
+_meshIndex = 0
+_primitiveIndex = 0
 
-# Create vertex and color array
+position_buf01 =  gltfdata.getMeshPosition(_meshIndex,_primitiveIndex)
+normal_buf02 =  gltfdata.getMeshNormal(_meshIndex,_primitiveIndex)
+tex0_buf03 =  gltfdata.getMeshTex0(_meshIndex,_primitiveIndex)
+indices = gltfdata.getMeshIndices(_meshIndex,_primitiveIndex)
 
-vertices = [-0.5, -0.5,  0.5,  1.0, 0.0, 0.0,  0.0, 0.0,
-             0.5, -0.5,  0.5,  0.0, 1.0, 0.0,  1.0, 0.0,
-             0.5,  0.5,  0.5,  0.0, 0.0, 1.0,  1.0, 1.0,
-            -0.5,  0.5,  0.5,  1.0, 1.0, 1.0,  0.0, 1.0,
-
-            -0.5, -0.5, -0.5,  1.0, 0.0, 0.0,  0.0, 0.0,
-             0.5, -0.5, -0.5,  0.0, 1.0, 0.0,  1.0, 0.0,
-             0.5,  0.5, -0.5,  0.0, 0.0, 1.0,  1.0, 1.0,
-            -0.5,  0.5, -0.5,  1.0, 1.0, 1.0,  0.0, 1.0,
-
-             0.5, -0.5, -0.5,  1.0, 0.0, 0.0,  0.0, 0.0,
-             0.5,  0.5, -0.5,  0.0, 1.0, 0.0,  1.0, 0.0,
-             0.5,  0.5,  0.5,  0.0, 0.0, 1.0,  1.0, 1.0,
-             0.5, -0.5,  0.5,  1.0, 1.0, 1.0,  0.0, 1.0,
-
-            -0.5,  0.5, -0.5,  1.0, 0.0, 0.0,  0.0, 0.0,
-            -0.5, -0.5, -0.5,  0.0, 1.0, 0.0,  1.0, 0.0,
-            -0.5, -0.5,  0.5,  0.0, 0.0, 1.0,  1.0, 1.0,
-            -0.5,  0.5,  0.5,  1.0, 1.0, 1.0,  0.0, 1.0,
-
-            -0.5, -0.5, -0.5,  1.0, 0.0, 0.0,  0.0, 0.0,
-             0.5, -0.5, -0.5,  0.0, 1.0, 0.0,  1.0, 0.0,
-             0.5, -0.5,  0.5,  0.0, 0.0, 1.0,  1.0, 1.0,
-            -0.5, -0.5,  0.5,  1.0, 1.0, 1.0,  0.0, 1.0,
-
-             0.5,  0.5, -0.5,  1.0, 0.0, 0.0,  0.0, 0.0,
-            -0.5,  0.5, -0.5,  0.0, 1.0, 0.0,  1.0, 0.0,
-            -0.5,  0.5,  0.5,  0.0, 0.0, 1.0,  1.0, 1.0,
-             0.5,  0.5,  0.5,  1.0, 1.0, 1.0,  0.0, 1.0]
-
-# vertices = objdata.getVertexList()
-# print(objdata.getVertexListLen())
-# Create new array for holding indices
-
-indices = [0,  1,  2,  2,  3,  0,
-           4,  5,  6,  6,  7,  4,
-           8,  9, 10, 10, 11,  8,
-          12, 13, 14, 14, 15, 12,
-          16, 17, 18, 18, 19, 16,
-          20, 21, 22, 22, 23, 20]
-
-# indices = objdata.getElementList()
-# print(objdata.getElementListLen())
-
+vertices1 = np.append(position_buf01, normal_buf02)
+vertices = np.append(vertices1, tex0_buf03)
+_buf_pos_01 = 0
+_buf_pos_02 = position_buf01.nbytes
+_buf_pos_03 = position_buf01.nbytes + normal_buf02.nbytes
 
 
 
@@ -93,17 +50,9 @@ glEnable(GL_DEPTH_TEST)
 
 
 # convert python arrays to numpy arrays as OpenGL expects in this format
-vertices = np.array(vertices, dtype = np.float32)
-indices = np.array(indices, dtype = np.uint32)
+# vertices = np.array(vertices, dtype = np.float32)
+# indices = np.array(indices, dtype = np.uint32)
 checkerTex = np.array(checkerTex, dtype=np.uint8)
-
-# print("GL_VENDOR : " + str(glGetString(GL_VENDOR)))
-# print("GL_RENDERER : " + str(glGetString(GL_RENDERER)))
-# print("GL_VERSION : " + str(glGetString(GL_VERSION)))
-# print("GL_SHADING_LANGUAGE_VERSION : " + str(glGetString(GL_SHADING_LANGUAGE_VERSION)))
-# print("GL_EXTENSIONS : " + str(glGetString(GL_EXTENSIONS)).replace(" ","\n") )
-
-
 
 
 # Compile shader program from vertex and fragment shader source code
@@ -121,9 +70,12 @@ glUseProgram(shader)
 VBO = glGenBuffers(1)
 glBindBuffer(GL_ARRAY_BUFFER, VBO)
 glBufferData(GL_ARRAY_BUFFER, vertices.nbytes, vertices, GL_STATIC_DRAW)
-glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 32, ctypes.c_void_p(0))
-glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 32, ctypes.c_void_p(12))
-glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 32, ctypes.c_void_p(24))
+# glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 32, ctypes.c_void_p(0))
+# glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 32, ctypes.c_void_p(12))
+# glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 32, ctypes.c_void_p(24))
+glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 12, ctypes.c_void_p(_buf_pos_01))
+glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 12, ctypes.c_void_p(_buf_pos_02))
+glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8, ctypes.c_void_p(_buf_pos_03))
 glEnableVertexAttribArray(0)
 glEnableVertexAttribArray(1)
 glEnableVertexAttribArray(2)
@@ -144,51 +96,10 @@ projectoin_loc = glGetUniformLocation(shader, "projection")
 
 glUniformMatrix4fv(projectoin_loc, 1, GL_FALSE, proj_mat)
 
-
-tex = glGenTextures(2)
-glBindTexture(GL_TEXTURE_2D, tex[0])
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-# glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
-# glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
-
-print( "GL_ACTIVE_TEXTURE", glGetInteger(GL_ACTIVE_TEXTURE) )
-print( "GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS", glGetInteger(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS) )
-
-text_ref = Image.open("assets/texture/orange.png")
-text_data = text_ref.convert("RGBA").tobytes()
-glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, text_ref.width, text_ref.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, text_data)
-
-# glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 2, 2, 0, GL_RGB, GL_FLOAT, checkerTex)
-glGenerateMipmap(GL_TEXTURE_2D)
-
-# glActiveTexture(GL_TEXTURE0)
-# tex_loc = glGetAttribLocation(shader, "a_texture")
-# glEnableVertexAttribArray(tex_loc)
-# glVertexAttribPointer(tex_loc, 2, GL_FLOAT, GL_FALSE, 12, 0)
-
-
-glBindTexture(GL_TEXTURE_2D, tex[1])
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-# glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
-# glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
-
-print( "GL_ACTIVE_TEXTURE", glGetInteger(GL_ACTIVE_TEXTURE) )
-print( "GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS", glGetInteger(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS) )
-
-text_ref = Image.open("assets/texture/apple.jpg")
-text_data = text_ref.convert("RGBA").tobytes()
-glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, text_ref.width, text_ref.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, text_data)
-
-# glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 2, 2, 0, GL_RGB, GL_FLOAT, checkerTex)
-glGenerateMipmap(GL_TEXTURE_2D)
-
-
+tex_Orange = fantaTexture("assets/texture/orange.png")
+tex_Apple = fantaTexture("assets/texture/apple.jpg")
+tex_checker = fantaTexture("assets/texture/apple.jpg")
+tex_checker.setChecker()
 
 # Start main eventloop for window
 while not glfw.window_should_close(window):
@@ -199,7 +110,8 @@ while not glfw.window_should_close(window):
     # Quit logic
     if glfw.get_key(window, glfw.KEY_ESCAPE):
         # glDeleteTextures(2, tex)
-        glDeleteTextures(len(tex), tex)
+        # glDeleteTextures(len(tex), tex)
+        fantaTexture.deleteAll()
         glDeleteProgram(shader)
         print("VBO ", VBO, "EDO", EDO)
         # glBindBuffer(GL_ARRAY_BUFFER, 0)
@@ -225,11 +137,18 @@ while not glfw.window_should_close(window):
     
     if glfw.get_key(window, glfw.KEY_LEFT):
         glRotate(0.1, 0, 0, 1)
-        glBindTexture(GL_TEXTURE_2D, tex[0])
+        glBindTexture(GL_TEXTURE_2D, tex_Orange.getTexID())
     if glfw.get_key(window, glfw.KEY_RIGHT):
         glRotate(-0.1, 0, 0, 1)
-        glBindTexture(GL_TEXTURE_2D, tex[1])
-    
+        glBindTexture(GL_TEXTURE_2D, tex_Apple.getTexID())
+    if glfw.get_key(window, glfw.KEY_UP):
+        glRotate(-0.1, 0, 0, 1)
+        glBindTexture(GL_TEXTURE_2D, 0)
+    if glfw.get_key(window, glfw.KEY_DOWN):
+        glRotate(-0.1, 0, 0, 1)
+        tex_checker.setChecker()
+        glBindTexture(GL_TEXTURE_2D, tex_checker.getTexID())
+
     # Swap buffers
     glfw.swap_buffers(window)
 
