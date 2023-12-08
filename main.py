@@ -11,28 +11,37 @@ from window import *
 from gltfReader import *
 from fantashader import fantaShader
 from fantatexture import fantaTexture
-
+from fantanode import fantaNode
 # Define window
 fantawin = FantaWin(400, 300)
 
 
+monkeynode = fantaNode("assets/model/monkey.gltf")
+monkeynodeVAO = monkeynode.createVAO()
+
+boxnode = fantaNode("assets/model/box.gltf")
+boxnodeVAO = boxnode.createVAO()
+
+conenode = fantaNode("assets/model/cone.gltf")
+conenodeVAO = conenode.createVAO()
+
 # Define 3d object
-gltfSrcfile: str = "assets/model/monkey.gltf"
-gltfdata = gltfReader(gltfSrcfile)
+# gltfSrcfile: str = "assets/model/monkey.gltf"
+# gltfdata = gltfReader(gltfSrcfile)
 
-_meshIndex = 0
-_primitiveIndex = 0
+# _meshIndex = 0
+# _primitiveIndex = 0
 
-position_buf01 =  gltfdata.getMeshPosition(_meshIndex,_primitiveIndex)
-normal_buf02 =  gltfdata.getMeshNormal(_meshIndex,_primitiveIndex)
-tex0_buf03 =  gltfdata.getMeshTex0(_meshIndex,_primitiveIndex)
-indices = gltfdata.getMeshIndices(_meshIndex,_primitiveIndex)
+# position_buf01 =  gltfdata.getMeshPosition(_meshIndex,_primitiveIndex)
+# normal_buf02 =  gltfdata.getMeshNormal(_meshIndex,_primitiveIndex)
+# tex0_buf03 =  gltfdata.getMeshTex0(_meshIndex,_primitiveIndex)
+# indices = gltfdata.getMeshIndices(_meshIndex,_primitiveIndex)
 
-vertices1 = np.append(position_buf01, normal_buf02)
-vertices = np.append(vertices1, tex0_buf03)
-_buf_pos_01 = 0
-_buf_pos_02 = position_buf01.nbytes
-_buf_pos_03 = position_buf01.nbytes + normal_buf02.nbytes
+# vertices1 = np.append(position_buf01, normal_buf02)
+# vertices = np.append(vertices1, tex0_buf03)
+# _buf_pos_01 = 0
+# _buf_pos_02 = position_buf01.nbytes
+# _buf_pos_03 = position_buf01.nbytes + normal_buf02.nbytes
 
 
 
@@ -40,8 +49,8 @@ global proj_mat
 
 
 
-checkerTex = [0.0, 0.0, 0.0, 1.0, 1.0, 1.0,
-              1.0, 1.0, 1.0, 0.0, 0.0, 0.0]
+# checkerTex = [0.0, 0.0, 0.0, 1.0, 1.0, 1.0,
+#               1.0, 1.0, 1.0, 0.0, 0.0, 0.0]
 
 
 # Set screen clear color
@@ -52,7 +61,7 @@ glEnable(GL_DEPTH_TEST)
 # convert python arrays to numpy arrays as OpenGL expects in this format
 # vertices = np.array(vertices, dtype = np.float32)
 # indices = np.array(indices, dtype = np.uint32)
-checkerTex = np.array(checkerTex, dtype=np.uint8)
+# checkerTex = np.array(checkerTex, dtype=np.uint8)
 
 
 # Compile shader program from vertex and fragment shader source code
@@ -64,25 +73,28 @@ shader = fShader.getProgram("test")
 glUseProgram(shader)
 
 
-## STEP 3
-# Generate buffer objects name. In this case we generated 2 named buffer objects.
-# one for vertices and another for color
-VBO = glGenBuffers(1)
-glBindBuffer(GL_ARRAY_BUFFER, VBO)
-glBufferData(GL_ARRAY_BUFFER, vertices.nbytes, vertices, GL_STATIC_DRAW)
-# glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 32, ctypes.c_void_p(0))
-# glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 32, ctypes.c_void_p(12))
-# glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 32, ctypes.c_void_p(24))
-glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 12, ctypes.c_void_p(_buf_pos_01))
-glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 12, ctypes.c_void_p(_buf_pos_02))
-glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8, ctypes.c_void_p(_buf_pos_03))
-glEnableVertexAttribArray(0)
-glEnableVertexAttribArray(1)
-glEnableVertexAttribArray(2)
+        # monkey_vao = glGenVertexArrays(1)
+        # glBindVertexArray(monkey_vao)
+        # ## STEP 3
+        # # Generate buffer objects name. In this case we generated 2 named buffer objects.
+        # # one for vertices and another for color
+        # VBO = glGenBuffers(1)
+        # glBindBuffer(GL_ARRAY_BUFFER, VBO)
+        # glBufferData(GL_ARRAY_BUFFER, vertices.nbytes, vertices, GL_STATIC_DRAW)
+        # # glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 32, ctypes.c_void_p(0))
+        # # glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 32, ctypes.c_void_p(12))
+        # # glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 32, ctypes.c_void_p(24))
+        # glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 12, ctypes.c_void_p(_buf_pos_01))
+        # glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 12, ctypes.c_void_p(_buf_pos_02))
+        # glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8, ctypes.c_void_p(_buf_pos_03))
+        # glEnableVertexAttribArray(0)
+        # glEnableVertexAttribArray(1)
+        # glEnableVertexAttribArray(2)
 
-EDO = glGenBuffers(1)
-glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EDO)
-glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.nbytes, indices, GL_STATIC_DRAW)
+        # EDO = glGenBuffers(1)
+        # glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EDO)
+        # glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.nbytes, indices, GL_STATIC_DRAW)
+        # glBindVertexArray(0)
 
 window = fantawin.getWindow()
 
@@ -113,7 +125,8 @@ while not glfw.window_should_close(window):
         # glDeleteTextures(len(tex), tex)
         fantaTexture.deleteAll()
         glDeleteProgram(shader)
-        print("VBO ", VBO, "EDO", EDO)
+        # print("VBO ", VBO, "EDO", EDO)
+        # print("VBO", monkeynode.getVBO(), "EDO", monkeynode.getEDO())
         # glBindBuffer(GL_ARRAY_BUFFER, 0)
         # glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
         # glDeleteBuffers(1, EDO)
@@ -129,11 +142,25 @@ while not glfw.window_should_close(window):
     rotation = pyrr.matrix44.multiply(rot_x , rot_y)
     model = pyrr.matrix44.multiply(rotation , trans_mat)
     
+    
+    
+    if glfw.get_key(window, glfw.KEY_M):
+        glBindVertexArray(monkeynodeVAO)
+        monkeynode.draw()
+    elif glfw.get_key(window, glfw.KEY_B):
+        glBindVertexArray(boxnodeVAO)
+        boxnode.draw()
+    else:
+        glBindVertexArray(conenodeVAO)
+        conenode.draw()
+
     glUniformMatrix4fv(model_loc, 1, GL_FALSE, model)
+
 
     # Instruction to start drawing with data provided data in step 3
     # glDrawArrays(GL_TRIANGLE_STRIP, 0, 4)
-    glDrawElements(GL_TRIANGLES, len(indices), GL_UNSIGNED_INT, None)
+    # glDrawElements(GL_TRIANGLES, len(indices), GL_UNSIGNED_INT, None)
+    
     
     if glfw.get_key(window, glfw.KEY_LEFT):
         glRotate(0.1, 0, 0, 1)
