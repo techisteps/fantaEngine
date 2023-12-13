@@ -1,12 +1,39 @@
-from fantashader import fantaShader
+# from fantashader import fantaShader
 
 
-test1 = fantaShader()
-test2 = fantaShader()
+# test1 = fantaShader()
+# test2 = fantaShader()
 
 
-print(test1)
-print(test2)
+# print(test1)
+# print(test2)
 
-sp1 = test1.getProgram("test")
-sp2 = test1.getProgram("test")
+# sp1 = test1.getProgram("test")
+# sp2 = test1.getProgram("test")
+
+import imgui
+
+# initilize imgui context (see documentation)
+imgui.create_context()
+imgui.get_io().display_size = 100, 100
+imgui.get_io().fonts.get_tex_data_as_rgba32()
+
+# start new frame context
+imgui.new_frame()
+
+# open new window context
+imgui.begin("Your first window!", True)
+
+# draw text label inside of current window
+imgui.text("Hello world!")
+
+# close current window context
+imgui.end()
+
+# pass all drawing comands to the rendering pipeline
+# and close frame context
+
+imgui.render()
+
+
+imgui.end_frame()

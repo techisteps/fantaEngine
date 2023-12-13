@@ -6,50 +6,95 @@ import numpy as np
 from math import sin
 import pyrr
 from PIL import Image
+# from objData import objData
 from window import *
 from gltfReader import *
 from fantashader import fantaShader
 from fantatexture import fantaTexture
 from fantanode import fantaNode
 
+import imgui
+from imgui.integrations.glfw import GlfwRenderer
+
+# ImGUI Start
+path_to_font = None  # "path/to/font.ttf"
+def render_frame(impl, window, font):
+    glfw.poll_events()
+    impl.process_inputs()
+    imgui.new_frame()
+
+    # glClearColor(0.1, 0.1, 0.1, 1)
+    # glClear(GL_COLOR_BUFFER_BIT)
+
+    if font is not None:
+        imgui.push_font(font)
+    # frame_commands()
+
+
+    with imgui.begin("Example: simple popup"):
+        if imgui.button("select"):
+            imgui.open_popup("select-popup")
+        imgui.same_line()
+        with imgui.begin_popup("select-popup") as popup:
+            if popup.opened:
+                imgui.text("Select one")
+                imgui.separator()
+                imgui.selectable("One")
+                imgui.selectable("Two")
+                imgui.selectable("Three")
 
 
 
+    if font is not None:
+        imgui.pop_font()
+
+    imgui.render()
+    impl.render(imgui.get_draw_data())
+
+# ImGUI End
+
+# ImGUI Start
+imgui.create_context()
+# ImGUI End
 
 # Define window
 fantawin = FantaWin(400, 300)
 
 
-# Load 3D objects
 monkeynode = fantaNode("assets/model/monkey.gltf")
 monkeynodeVAO = monkeynode.createVAO()
+
 boxnode = fantaNode("assets/model/box.gltf")
 boxnodeVAO = boxnode.createVAO()
+
 conenode = fantaNode("assets/model/cone.gltf")
 conenodeVAO = conenode.createVAO()
+
+
+global proj_mat
+
+
+# Set screen clear color
+glClearColor(0.5, 0.4, 0.6, 1)
+glEnable(GL_DEPTH_TEST)
+
 
 
 # Compile shader program from vertex and fragment shader source code
 fShader = fantaShader()
 shader = fShader.getProgram("")
 shader = fShader.getProgram("test")
+
 # Specify to use the shader program for rendering.
 glUseProgram(shader)
 
-
-# Load Textures
-tex_Orange = fantaTexture("assets/texture/orange.png")
-tex_Apple = fantaTexture("assets/texture/apple.jpg")
-tex_checker = fantaTexture("assets/texture/apple.jpg")
-tex_checker.setChecker()
-
-
-
-# Create window
 window = fantawin.getWindow()
-w,h = glfw.get_window_size(window)
 
-global proj_mat
+
+
+
+w,h = glfw.get_window_size(window)
+print(w,h)
 proj_mat = pyrr.matrix44.create_perspective_projection_matrix(45, w/h , 0.1 , 100 )
 trans_mat = pyrr.matrix44.create_from_translation(pyrr.vector3.create(0,0,-3))
 
@@ -58,13 +103,17 @@ projectoin_loc = glGetUniformLocation(shader, "projection")
 
 glUniformMatrix4fv(projectoin_loc, 1, GL_FALSE, proj_mat)
 
+tex_Orange = fantaTexture("assets/texture/orange.png")
+tex_Apple = fantaTexture("assets/texture/apple.jpg")
+tex_checker = fantaTexture("assets/texture/apple.jpg")
+tex_checker.setChecker()
 
-
-# Set screen clear color
-glClearColor(0.5, 0.4, 0.6, 1)
-glEnable(GL_DEPTH_TEST)
-
-
+# ImGUI Start
+impl = GlfwRenderer(window)
+io = imgui.get_io()
+jb = io.fonts.add_font_from_file_ttf(path_to_font, 30) if path_to_font is not None else None
+impl.refresh_font_texture()
+# ImGUI End
 
 # Start main eventloop for window
 while not glfw.window_should_close(window):
@@ -88,25 +137,23 @@ while not glfw.window_should_close(window):
     model = pyrr.matrix44.multiply(rotation , trans_mat)
 
 
-   
-    # if glfw.get_key(window, glfw.KEY_M):
-    #     glBindVertexArray(monkeynodeVAO)
-    #     monkeynode.draw()
-    # elif glfw.get_key(window, glfw.KEY_B):
-    #     glBindVertexArray(boxnodeVAO)
-    #     boxnode.draw()
-    # else:
-    #     glBindVertexArray(conenodeVAO)
-    #     conenode.draw()
-
-
-    glBindVertexArray(monkeynodeVAO)
-    monkeynode.draw()
-    glBindVertexArray(boxnodeVAO)
-    boxnode.draw()
-
 
     
+    if glfw.get_key(window, glfw.KEY_M):
+        glBindVertexArray(monkeynodeVAO)
+        monkeynode.draw()
+    elif glfw.get_key(window, glfw.KEY_B):
+        glBindVertexArray(boxnodeVAO)
+        boxnode.draw()
+    else:
+        glBindVertexArray(conenodeVAO)
+        conenode.draw()
+
+
+    # ImGUI Start
+    render_frame(impl, window, jb)
+    # ImGUI End
+
     glUniformMatrix4fv(model_loc, 1, GL_FALSE, model)
 
     
@@ -128,6 +175,9 @@ while not glfw.window_should_close(window):
     glfw.swap_buffers(window)
 
 
+# ImGUI Start
+impl.shutdown()
+# ImGUI End
 fantawin.destroy_window(0)
 
 

@@ -4,6 +4,9 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+imgui = {extras = ["glfw"], version = "*"}
+freetype-py = "*"
+matplotlib = "*"
 
 [dev-packages]
 
