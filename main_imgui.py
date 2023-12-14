@@ -19,7 +19,7 @@ from imgui.integrations.glfw import GlfwRenderer
 # ImGUI Start
 path_to_font = None  # "path/to/font.ttf"
 def render_frame(impl, window, font):
-    glfw.poll_events()
+    # glfw.poll_events()
     impl.process_inputs()
     imgui.new_frame()
 
