@@ -1,4 +1,4 @@
-from fantaengine import fantawindow, fantashader, fantanode, fantatexture, fantaimgui, gltfReader, rendertree
+from fantaengine import fantawindow, fantashader, fantanode, fantanodelist, fantatexture, fantaimgui, gltfReader, rendertree, fantaevents
 
 
 

@@ -1,8 +1,11 @@
 import imgui
 from imgui.integrations.glfw import GlfwRenderer
 import sys
+from fantaengine.fantaevents import *
 
 class fantaImGUI:
+
+    __imgui_vis = {"addNode": False}
 
     __instance = None
     __impl = None
@@ -18,6 +21,8 @@ class fantaImGUI:
             # self.jb = self.io.fonts.add_font_from_file_ttf(path_to_font, 30) if path_to_font is not None else None
             cls.__impl.refresh_font_texture()
 
+            cls.f_events = fantaEvents()
+
             return cls.__instance
         else:
             return cls.__instance
@@ -25,6 +30,27 @@ class fantaImGUI:
 
     # def __init__(self, win):
     #     imgui.create_context()
+
+
+    def addnode(self):
+        li = ["box", "monkey", "cone"]
+        sel_item = None
+        imgui.begin("Test")
+        if imgui.begin_list_box("TestLB").opened:
+            for item in li:
+                if imgui.selectable(item, False):
+                    if imgui.is_item_clicked():
+                        sel_item = item
+                        self.f_events.dispatch_event("TestLB", item)
+
+            # imgui.selectable("monkey")
+            imgui.end_list_box()
+        imgui.end()
+    
+    # if sel_item is not None:
+    #     print(f"{sel_item} selected")
+    #     sel_item = None
+
 
 
     # path_to_font = None  # "path/to/font.ttf"
@@ -52,6 +78,15 @@ class fantaImGUI:
                     imgui.selectable("One")
                     imgui.selectable("Two")
                     imgui.selectable("Three")
+        
+        self.addnode()
+
+        if self.__imgui_vis["addNode"]:
+            with imgui.begin("Nodes"):
+                with imgui.begin_list_box("") as list_box:
+                    if list_box.opened:
+                        imgui.selectable("box")
+                        imgui.selectable("monkey")
 
 
 
@@ -59,6 +94,10 @@ class fantaImGUI:
             if main_menu_bar.opened:
                 with imgui.begin_menu("File", True) as file_menu:
                     if file_menu.opened:
+                        clicked_node, selected_node = imgui.menu_item("Add Node", "Ctrl+N")
+                        if clicked_node:
+                            self.__imgui_vis["addNode"] = True
+
                         clicked_quit, selected_quit = imgui.menu_item("Quit", "Ctrl+Q")
                         if clicked_quit:
                             self.__quiting = True

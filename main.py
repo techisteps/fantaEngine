@@ -1,44 +1,43 @@
 
 import glfw
 from OpenGL.GL import *
-from OpenGL.GL.shaders import compileProgram, compileShader
-import numpy as np
-from math import sin
 import pyrr
-from PIL import Image
-# from window import *
-# from gltfReader import *
-# from fantashader import fantaShader
-# from fantatexture import fantaTexture
-# from fantanode import fantaNode
-# from fantaimgui import fantaImGUI
-# from fantaengine import fantawindow, fantashader, fantanode, fantatexture, fantaimgui, gltfReader
-from fantaengine import *
 
+from fantaengine import *
 
 
 # Define window
 fantawin = fantawindow.FantaWin(400, 300)
+nodelist = fantanodelist.NodeList()
 fantaRender = rendertree.RenderTree()
+f_events = fantaevents.fantaEvents()
 
-# Load 3D objects
-monkeynode = fantanode.fantaNode("monkey", "assets/model/monkey.gltf")
-# monkeynode = fantanode.fantaNode(nodename="monkey", assetpath="assets/model/monkey.gltf")
-# print(monkeynode)
-# monkeynode = fantanode.fantaNode("monkey", "assets/model/monkey.gltf")
-# print(monkeynode)
-# monkeynodeVAO = monkeynode.createVAO()
-boxnode = fantanode.fantaNode("box", "assets/model/box.gltf")
-# boxnodeVAO = boxnode.createVAO()
-conenode = fantanode.fantaNode("cone", "assets/model/cone.gltf")
-# conenodeVAO = conenode.createVAO()
 
-fantaRender.add_child(monkeynode)
-fantaRender.add_child(boxnode)
-fantaRender.add_child(boxnode)
-fantaRender.remove_child(boxnode)
-fantaRender.remove_child(boxnode)
-# fantaRender.add_child(conenode)
+
+
+
+# nodelist.add_item("monkey", "assets/model/monkey.gltf")
+# nodelist.add_item("box", "assets/model/box.gltf")
+# nodelist.add_item("cone", "assets/model/cone.gltf")
+# nodelist.delete_item("cone")
+
+
+item_to_Display = {}
+def clickevent(e):
+    if e not in item_to_Display:
+        item_to_Display[e] = True
+    else:
+        item_to_Display[e] = False if item_to_Display[e] else True
+    
+    if item_to_Display[e] == True:
+        nodelist.add_item(e, f"assets/model/{e}.gltf")
+    else:
+        nodelist.delete_item(e)
+
+    # print(f"event TestLB occured with data {e}")
+    
+f_events.register_event("TestLB", clickevent)
+
 
 
 # Compile shader program from vertex and fragment shader source code
@@ -110,31 +109,6 @@ while not glfw.window_should_close(window):
     model = pyrr.matrix44.multiply(rotation , trans_mat)
 
 
-   
-    # if glfw.get_key(window, glfw.KEY_M):
-    #     glBindVertexArray(monkeynodeVAO)
-    #     monkeynode.draw()
-    # elif glfw.get_key(window, glfw.KEY_B):
-    #     glBindVertexArray(boxnodeVAO)
-    #     boxnode.draw()
-    # else:
-    #     glBindVertexArray(conenodeVAO)
-    #     conenode.draw()
-
-
-    """
-    TODO add VAO to fantanode class and implement add_child and remove_child in rendertree class.
-    """
-    # glBindVertexArray(monkeynodeVAO)
-    # monkeynode.render()
-    # glBindVertexArray(boxnodeVAO)
-    # boxnode.render()
-
-
-    # if glfw.get_key(window, glfw.KEY_A):
-    #     fantaRender.add_child(monkeynode)
-    # if glfw.get_key(window, glfw.KEY_D):
-    #     fantaRender.remove_child(monkeynode)
 
 
     fantaRender.render()

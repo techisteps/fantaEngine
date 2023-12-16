@@ -12,31 +12,12 @@ class fantaNode:
     __EDO = None
     __node_ID = 0
     __node_name = None
-    __node_name_list = []
+    __node_name_list = {}
 
-    # gv = Globals()
-    # gv.add_global("node_count", 0)
-
-    def __new__(cls, *args, **kwargs):
-        print("*args", args,"**kwargs", kwargs)
-
-        _a1 = args[0] if len(args) else None
-        _a2 = kwargs["nodename"] if len(kwargs) else None
-
-        if (_a1 in fantaNode.__node_name_list) or (_a2 in fantaNode.__node_name_list):
-            # return None
-            raise ValueError(f"Node already exist.")
-        else:
-            return super().__new__(cls)
-        # pass
+    gv = Globals()
+    gv.add_global("nodes", {})
 
     def __init__(self, nodename:str, assetpath: str):
-
-        # if nodename not in fantaNode.__node_name_list:
-        #     fantaNode.__node_name_list.append(nodename)
-        #     ic("node present: " + nodename)
-
-        fantaNode.__node_name_list.append(nodename)
 
         self.__node_ID += 1
         self.__node_name = nodename
@@ -59,6 +40,15 @@ class fantaNode:
         self._buf_pos_03 = self.position_buf01.nbytes + self.normal_buf02.nbytes
 
         fantaNode.createVAO(self)
+        
+
+    # def __del__(self):
+    #     # fantaNode.__node_name_list.pop(self.__node_name)
+    #     ic(fantaNode.__node_name_list)
+    
+    # def delete(self):
+    #     del fantaNode.__node_name_list[self.__node_name]
+    #     ic(fantaNode.__node_name_list)
 
     def getID(self):
         return self.__node_ID
