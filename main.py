@@ -50,9 +50,18 @@ glUseProgram(shader)
 
 # Load Textures
 tex_Orange = fantatexture.fantaTexture("assets/texture/orange.png")
+tex_Orange = fantatexture.fantaTexture("assets/texture/orange.png")
 tex_Apple = fantatexture.fantaTexture("assets/texture/apple.jpg")
-tex_checker = fantatexture.fantaTexture("assets/texture/apple.jpg")
-tex_checker.setChecker()
+# tex_Orange = fantatexture.fantaTexture("")
+# tex_Apple = fantatexture.fantaTexture()
+tex_checker = fantatexture.fantaTexture()
+
+fantatexture.fantaTexture.printAll()
+print(fantatexture.fantaTexture.getCount())
+# fantatexture.fantaTexture.deleteAll()
+fantatexture.fantaTexture.printAll()
+print(fantatexture.fantaTexture.getCount())
+# tex_checker.setChecker()
 
 
 
@@ -127,16 +136,19 @@ while not glfw.window_should_close(window):
     if glfw.get_key(window, glfw.KEY_LEFT):
         glRotate(0.1, 0, 0, 1)
         glBindTexture(GL_TEXTURE_2D, tex_Orange.getTexID())
+        print(tex_Orange.getTexID())
     if glfw.get_key(window, glfw.KEY_RIGHT):
         glRotate(-0.1, 0, 0, 1)
         glBindTexture(GL_TEXTURE_2D, tex_Apple.getTexID())
+        print(tex_Apple.getTexID())
     if glfw.get_key(window, glfw.KEY_UP):
         glRotate(-0.1, 0, 0, 1)
         glBindTexture(GL_TEXTURE_2D, 0)
     if glfw.get_key(window, glfw.KEY_DOWN):
         glRotate(-0.1, 0, 0, 1)
-        tex_checker.setChecker()
+        # tex_checker.setChecker()
         glBindTexture(GL_TEXTURE_2D, tex_checker.getTexID())
+        print(tex_checker.getTexID())
 
 
 

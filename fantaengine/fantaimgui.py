@@ -3,7 +3,13 @@ from imgui.integrations.glfw import GlfwRenderer
 import sys
 from fantaengine.fantaevents import *
 
+
 class fantaImGUI:
+    """This class is to handle GUI in development phase.
+
+    Returns:
+        fantaImGUI: A singleton object of class fantaImGUI.
+    """
 
     __imgui_vis = {"addNode": False}
 
@@ -12,6 +18,18 @@ class fantaImGUI:
     __visible = False
     __quiting  = False
     def __new__(cls, window, *args, **kwargs):
+        """
+        __new__ Creates a singleton instance of class {class}
+
+        This class is used for GUI for development phase.
+
+        Args:
+            window (Object): Object of GLFW
+
+        Returns:
+            fantaImGUI: An instance of fantaImGUI
+        """
+
         if cls.__instance is None:
             cls.__instance = super().__new__(cls)
             

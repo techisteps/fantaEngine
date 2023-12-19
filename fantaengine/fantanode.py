@@ -39,23 +39,9 @@ class fantaNode:
         self._buf_pos_02 = self.position_buf01.nbytes
         self._buf_pos_03 = self.position_buf01.nbytes + self.normal_buf02.nbytes
 
-        fantaNode.createVAO(self)
-        
-
-    # def __del__(self):
-    #     # fantaNode.__node_name_list.pop(self.__node_name)
-    #     ic(fantaNode.__node_name_list)
+    #     fantaNode.createVAO(self)
     
-    # def delete(self):
-    #     del fantaNode.__node_name_list[self.__node_name]
-    #     ic(fantaNode.__node_name_list)
-
-    def getID(self):
-        return self.__node_ID
-    def getName(self):
-        return self.__node_name
-    
-    def createVAO(self):
+    # def createVAO(self):
         self.__vao = glGenVertexArrays(1)
         glBindVertexArray(self.__vao)
         ## STEP 3
@@ -78,7 +64,23 @@ class fantaNode:
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.__EDO)
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, self.indices.nbytes, self.indices, GL_STATIC_DRAW)
         glBindVertexArray(0)
-        return self.__vao
+        # return self.__vao
+
+
+    def getID(self):
+        return self.__node_ID
+
+    def getName(self):
+        return self.__node_name
+
+    # def __del__(self):
+    #     # fantaNode.__node_name_list.pop(self.__node_name)
+    #     ic(fantaNode.__node_name_list)
+    
+    # def delete(self):
+    #     del fantaNode.__node_name_list[self.__node_name]
+    #     ic(fantaNode.__node_name_list)
+
 
     def getVBO(self):
         return self.__VBO

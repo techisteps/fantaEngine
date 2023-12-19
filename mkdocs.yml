@@ -1,0 +1,32 @@
+site_name: FantaEngine
+# nav:
+#   - fantaevents: fantaevents.md
+#   - fantaimgui: fantaimgui.md
+theme:
+  name: material
+  features:
+    # - navigation.tabs
+    # - navigation.tabs.sticky
+    - toc.integrate
+    - navigation.top
+    - search.suggest
+    - search.highlight
+  language: en
+  palette: 
+    # Palette toggle for light mode
+    - scheme: default
+      toggle:
+        icon: material/brightness-7 
+        name: Switch to dark mode
+      primary: white
+      accent: blue
+    # Palette toggle for dark mode
+    - scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+      primary: light blue
+      accent: blue
+plugins:
+  - search
+  - mkdocstrings
